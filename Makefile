@@ -1,53 +1,57 @@
-LOGIN = vfedorov
+LOGIN = valeriafedorova
 DOMAIN = ${LOGIN}.42.fr
-DATA_PATH = /home/${LOGIN}/data
+DATA_PATH = /Users/${LOGIN}/data
 #DATA_PATH = /Users/valeriafedorova/Desktop/inseptopn/t
 ENV = LOGIN=${LOGIN} DATA_PATH=${DATA_PATH} DOMAIN=${LOGIN}.42.fr 
+
+GREEN := "\033[1;32m"
 
 .DEFAULT_GOAL := up-no-detach
 
 .PHONY : all
 all: up
+	@bash srcs/requirements/tools/create.dr.sh
+	@echo $(GREEN) "\n\tBuild ${name}: done\n" ${END}
 
 .PHONY : up
 up: setup
-	 cd srcs && ${ENV} docker-compose up -d
+	 cd srcs && ${ENV} docker compose up -d
 
 .PHONY : rebuild-wordpress
 rebuild-wordpress :
-	cd srcs && ${ENV} docker-compose build --no-cache wordpress
+	cd srcs && ${ENV} docker compose build --no-cache wordpress
 
 .PHONY : rebuild-wordpress-cached
 rebuild-wordpress-cached :
-	cd srcs && ${ENV} docker-compose build wordpress
+	cd srcs && ${ENV} docker compose build wordpress
 
 .PHONY : rebuild
 rebuild :
-	cd srcs && ${ENV} docker-compose build --no-cache
+	cd srcs && ${ENV} docker compose build --no-cache
 
 .PHONY : up-no-detach
 up-no-detach: setup
-	cd srcs && ${ENV} docker-compose up
+	cd srcs && ${ENV} docker compose up
 
 .PHONY : down
 down:
-	cd srcs && ${ENV} docker-compose down
+	cd srcs && ${ENV} docker compose down
 
 .PHONY : start
 start:
-	cd srcs && ${ENV} docker-compose start
+	cd srcs && ${ENV} docker compose start
 
 .PHONY : stop
 stop:
-	cd srcs  && ${ENV} docker-compose stop
+	cd srcs  && ${ENV} docker compose stop
 
 .PHONY : status
 status:
-	cd srcs && docker-compose ps
+	cd srcs && docker compose ps
 
 .PHONY : logs
 logs:
-	cd srcs && docker-compose logs
+	cd srcs && docker compose logs
 
 .PHONY : setup
 setup:
@@ -56,6 +60,7 @@ setup:
 
 .PHONY : clean
 clean: stop
+	@bash srcs/requirements/tools/delete.dr.sh
 	sudo rm -rf ${DATA_PATH}
 
 .PHONY : fclean

@@ -1,16 +1,16 @@
-version: "3.8"
 
 services:
   nginx:
     container_name: nginx
     image: nginx
     build:
-       context: ./requirements/nginx
-    env_file: .env
+       context: .
+       dockerfile: requirements/nginx/Dockerfile
+    env_file: ../.env
+    ports:
+      - '443:443'
     networks:
       - inception
-    ports:
-      - "443:443"
     restart: on-failure
     volumes:
       - wordpress-data:/var/www/html/
@@ -21,25 +21,37 @@ services:
     container_name: mariadb
     image: mariadb
     build:
-       context: ./requirements/mariadb
-    env_file: .env
+       context: .
+       dockerfile: requirements/mariadb/Dockerfile
+    env_file: ../.env
+    ports:
+      - '3306:3306'
+    environment:
+        MARIADB_ROOT_PASSWORD: your-secure-password
     networks:
       - inception
     restart: on-failure
     volumes:
       - mariadb-data:/var/lib/mysql/
+    secrets:
+      - db_creds
+      - db_root
 
   wordpress:
     container_name: wordpress
     image: wordpress
     build:
-       context: ./requirements/wordpress
-    env_file: .env
+       context: .
+       dockerfile: requirements/wordpress/Dockerfile
+    env_file: ../.env
     networks:
       - inception
     restart: on-failure
     volumes:
       - wordpress-data:/var/www/html/
+    secrets:
+      - db_creds
+      - db_root
     depends_on:
       - mariadb
 
@@ -50,19 +62,21 @@ networks:
 
 volumes:
   mariadb-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: ${DATA_PATH}/mariadb-data
-    name: mariadb
   wordpress-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: ${DATA_PATH}/wordpress-data
-    name: wordpress
+  # mariadb-data:
+  #   driver: local
+  #   driver_opts:
+  #     type: 'none'
+  #     o: 'bind'
+  #     device: ${DATA_PATH}/mariadb-data
+  #   name: mariadb
+  # wordpress-data:
+  #   driver: local
+  #   driver_opts:
+  #     type: 'none'
+  #     o: 'bind'
+  #     device: ${DATA_PATH}/wordpress-data
+  #   name: wordpress
 
 secrets:
   db_creds:

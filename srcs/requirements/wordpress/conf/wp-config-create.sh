@@ -43,16 +43,14 @@ fi
 
 
 echo "[WP config] Waiting for MariaDB..."
-while ! nc -z mariadb 3306; do
-    :
-done
+
 echo "[WP config] MariaDB accessible."
 
-NGINX_HOST=$(cat /run/secrets/wp_creds | grep URL | cut -d '=' -f2 | tr -d '\n')
-TITLE=$(cat /run/secrets/wp_creds | grep TITLE | cut -d '=' -f2 | tr -d '\n')
-ADMIN_LOGIN=$(cat /run/secrets/wp_creds | grep ADMIN_LOGIN | cut -d '=' -f2 | tr -d '\n')
-ADMIN_PASS=$(cat /run/secrets/wp_creds | grep ADMIN_PASS | cut -d '=' -f2 | tr -d '\n')
-ADMIN_MAIL=$(cat /run/secrets/wp_creds | grep ADMIN_MAIL | cut -d '=' -f2 | tr -d '\n')
+NGINX_HOST=$(cat /project/secrets/wp_creds | grep URL | cut -d '=' -f2 | tr -d '\n')
+TITLE=$(cat /project/secrets/wp_creds | grep TITLE | cut -d '=' -f2 | tr -d '\n')
+ADMIN_LOGIN=$(cat /project/secrets/wp_creds | grep ADMIN_LOGIN | cut -d '=' -f2 | tr -d '\n')
+ADMIN_PASS=$(cat /project/secrets/wp_creds | grep ADMIN_PASS | cut -d '=' -f2 | tr -d '\n')
+ADMIN_MAIL=$(cat /project/secrets/wp_creds | grep ADMIN_MAIL | cut -d '=' -f2 | tr -d '\n')
 
 wp core install --allow-root --path=/var/www \
                 --url=$NGINX_HOST \
@@ -61,10 +59,10 @@ wp core install --allow-root --path=/var/www \
                 --admin_password=$ADMIN_PASS \
                 --admin_email=$ADMIN_MAIL
 
-USER1_LOGIN=$(cat /run/secrets/wp_creds | grep USER1_LOGIN | cut -d '=' -f2 | tr -d '\n')
-USER1_PASS=$(cat /run/secrets/wp_creds | grep USER1_PASS | cut -d '=' -f2 | tr -d '\n')
-USER1_ROLE=$(cat /run/secrets/wp_creds | grep USER1_ROLE | cut -d '=' -f2 | tr -d '\n')
-USER1_MAIL=$(cat /run/secrets/wp_creds | grep USER1_MAIL | cut -d '=' -f2 | tr -d '\n')
+USER1_LOGIN=$(cat /project/secrets/wp_creds | grep USER1_LOGIN | cut -d '=' -f2 | tr -d '\n')
+USER1_PASS=$(cat /project/secrets/wp_creds | grep USER1_PASS | cut -d '=' -f2 | tr -d '\n')
+USER1_ROLE=$(cat /project/secrets/wp_creds | grep USER1_ROLE | cut -d '=' -f2 | tr -d '\n')
+USER1_MAIL=$(cat /project/secrets/wp_creds | grep USER1_MAIL | cut -d '=' -f2 | tr -d '\n')
 
 wp user create  --allow-root --path=/var/www \
                 $USER1_LOGIN \
@@ -74,7 +72,7 @@ wp user create  --allow-root --path=/var/www \
 
 wp plugin update --allow-root --path=/var/www --all
 
-$@
 
 echo "[WP config] Starting WordPress fastCGI on port 9000."
 exec env -i /usr/sbin/php-fpm83 -F -R
+$@
