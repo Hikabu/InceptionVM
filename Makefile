@@ -9,6 +9,9 @@ ENV = LOGIN=${LOGIN} DATA_PATH=${DATA_PATH} DOMAIN=${LOGIN}.42.fr
 .PHONY : all
 all: up
 
+debug:
+	cd srcs && docker-compose up --build
+
 .PHONY : up
 up: setup
 	 cd srcs && ${ENV} docker-compose up -d

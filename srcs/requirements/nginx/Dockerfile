@@ -2,7 +2,8 @@ from alpine:3.20
 
 run apk update && apk upgrade && apk add --no-cache nginx openssl
 
-copy ./requirements/nginx/conf/nginx.conf /etc/nginx/http.d/nginx.conf
+copy ./conf/default.conf /etc/nginx/http.d/default.conf
+# copy ./requirements/nginx/conf/mine.conf /etc/nginx/http.d/mine.conf
 
 run \
 	apk add openssl && \

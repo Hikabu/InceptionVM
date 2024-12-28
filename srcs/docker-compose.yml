@@ -4,8 +4,7 @@ services:
     container_name: nginx
     image: nginx
     build:
-       context: .
-       dockerfile: requirements/nginx/Dockerfile
+       context: ./requirements/nginx/
     env_file: ../.env
     ports:
       - '443:443'
@@ -13,7 +12,7 @@ services:
       - inception
     restart: on-failure
     volumes:
-      - wordpress-data:/var/www/
+      - wordpress-data:/var/www/html/wordpress
     depends_on:
       - wordpress
 
@@ -26,38 +25,57 @@ services:
     env_file: ../.env
     ports:
       - '3306:3306'
-    environment:
-        MARIADB_ROOT_PASSWORD: password
     networks:
       - inception
     restart: on-failure
     volumes:
       - mariadb-data:/var/lib/mysql/
     secrets:
-      - source: db_creds
-        target: /project/secrets/db_creds.txt
-      - source: db_root
-        target: /project/secrets/db_root_pass.txt
+      - db_creds
+      - db_root
 
   wordpress:
     container_name: wordpress
     image: wordpress
     build:
-       context: .
-       dockerfile: requirements/wordpress/Dockerfile
+       context: ./requirements/wordpress/
     env_file: ../.env
+    ports:
+      - '9000:9000'
     networks:
       - inception
     restart: on-failure
     volumes:
-      - wordpress-data:/var/www/html/
+      - wordpress-data:/var/www/html/wordpress
     secrets:
-      - source: db_creds
-        target: /project/secrets/db_creds.txt
-      - source: wp_creds
-        target: /project/secrets/wp_creds.txt
+      - db_creds 
+      - wp_creds 
     depends_on:
       - mariadb
+
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    networks:
+      - inception
+    container_name: portainer
+    restart: on-failure
+    ports:
+      - "1313:9000"  # Portainer UI
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    # environment:
+    #   TZ: "Your/Timezone"  # Optional: Replace with your timezone (e.g., "Etc/UTC" or "America/New_York")
+
+
+  # adminer:
+  #   image: adminer
+  #   restart: on-failure
+  #   networks:
+  #     - inception
+  #   ports:
+  #     - 8080:8080
 
 networks:
   inception:
@@ -66,7 +84,9 @@ networks:
 
 volumes:
   mariadb-data:
-  wordpress-data:
+  # wordpress-data:
+  portainer_data:
+
   # mariadb-data:
   #   driver: local
   #   driver_opts:
@@ -74,19 +94,19 @@ volumes:
   #     o: 'bind'
   #     device: ${DATA_PATH}/mariadb-data
   #   name: mariadb
-  # wordpress-data:
-  #   driver: local
-  #   driver_opts:
-  #     type: 'none'
-  #     o: 'bind'
-  #     device: ${DATA_PATH}/wordpress-data
-  #   name: wordpress
+  wordpress-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: $HOME/data/wordpress-data
+    name: wordpress
 
 
 secrets:
   db_creds:
-    file: ${secrets_dir}/db_creds.txt
+    file: /home/vfedorov/project/secrets/db_creds.txt
   db_root:
-    file: ${secrets_dir}/db_root_pass.txt
+    file: /home/vfedorov/project/secrets/db_root_pass.txt
   wp_creds:
-    file: ${secrets_dir}/wp_creds.txt
+    file: /home/vfedorov/project/secrets/wp_creds.txt

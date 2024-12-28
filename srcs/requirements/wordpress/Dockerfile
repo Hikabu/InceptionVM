@@ -58,23 +58,24 @@ run sed -i 's/listen = 127.0.0.1:9000/listen = 9000/g' /etc/php83/php-fpm.d/www.
 #	chmod +x wp-cli.phar && \
 #	mv wp-cli.phar /usr/bin/wp-cli.phar
 
+# Install Wordpres CLI
 RUN wget https://github.com/wp-cli/wp-cli/releases/download/v2.10.0/wp-cli-2.10.0.phar && \
     php wp-cli-2.10.0.phar --info && \
     chmod +x wp-cli-2.10.0.phar && \
     mv wp-cli-2.10.0.phar /usr/local/bin/wp
 
-RUN wp core download --allow-root --version='6.5' --path='/var/www/' && \
-    wp core version --allow-root --path='/var/www/' && \
-    chmod -R 0777 /var/www/wp-content
+# Install websire
+# RUN wp core download --allow-root --version='6.5' --path='/var/www/html/wordpress' && \
+#     wp core version --allow-root --path='/var/www/html/wordpress'
 
-copy ./requirements/wordpress/conf/wp-config-create.sh /var/www/
-run chmod +x ./var/www/wp-config-create.sh
+copy ./tools/ /tools
+run chmod +x /tools/wp-config-create.sh
 
 run \
     if [ -L /usr/bin/php ]; then rm /usr/bin/php; fi && \
     ln -s /usr/bin/php83 /usr/bin/php
 
-workdir /var/www/wp-config-create
+workdir /var/www/html/wordpress
 
-entrypoint ["/var/www/wp-config-create.sh"]
+entrypoint ["/tools/wp-config-create.sh"]
 cmd ["php-fpm83 -F"]
