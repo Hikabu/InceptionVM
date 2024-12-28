@@ -13,10 +13,10 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
         fi
 fi
 
-DB_NAME=$(cat /project/secrets/db_creds.txt | grep DB_NAME | cut -d '=' -f2 | tr -d '\n')
-DB_USER=$(cat /project/secrets/db_creds.txt | grep DB_USER | cut -d '=' -f2 | tr -d '\n')
-DB_PASS=$(cat /project/secrets/db_creds.txt | grep DB_PASS | cut -d '=' -f2 | tr -d '\n')
-DB_ROOT=$(cat /project/secrets/db_root.txt | tr -d '\n')
+DB_NAME=$(cat project/secrets/db_creds.txt | grep DB_NAME | cut -d '=' -f2 | tr -d '\n')
+DB_USER=$(cat project/secrets/db_creds.txt | grep DB_USER | cut -d '=' -f2 | tr -d '\n')
+DB_PASS=$(cat project/secrets/db_creds.txt | grep DB_PASS | cut -d '=' -f2 | tr -d '\n')
+DB_ROOT=$(cat project/secrets/db_root_pass.txt | tr -d '\n')
 
 if [ ! -d "/var/lib/mysql/${DB_NAME}" ]; then
 
