@@ -52,11 +52,20 @@ run \
 
 run sed -i 's/listen = 127.0.0.1:9000/listen = 9000/g' /etc/php83/php-fpm.d/www.conf
 
-run \
-	apk add curl && \
-	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-	chmod +x wp-cli.phar && \
-	mv wp-cli.phar /usr/bin/wp-cli.phar
+#run \
+#	apk add curl && \
+#	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+#	chmod +x wp-cli.phar && \
+#	mv wp-cli.phar /usr/bin/wp-cli.phar
+
+RUN wget https://github.com/wp-cli/wp-cli/releases/download/v2.10.0/wp-cli-2.10.0.phar && \
+    php wp-cli-2.10.0.phar --info && \
+    chmod +x wp-cli-2.10.0.phar && \
+    mv wp-cli-2.10.0.phar /usr/local/bin/wp
+
+RUN wp core download --allow-root --version='6.5' --path='/var/www/' && \
+    wp core version --allow-root --path='/var/www/' && \
+    chmod -R 0777 /var/www/wp-content
 
 copy ./requirements/wordpress/conf/wp-config-create.sh /var/www/
 run chmod +x ./var/www/wp-config-create.sh
@@ -68,3 +77,4 @@ run \
 workdir /var/www/wp-config-create
 
 entrypoint ["/var/www/wp-config-create.sh"]
+cmd ["php-fpm83 -F"]

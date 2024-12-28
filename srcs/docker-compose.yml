@@ -54,8 +54,8 @@ services:
     secrets:
       - source: db_creds
         target: /project/secrets/db_creds.txt
-      - source: db_root
-        target: /project/secrets/db_root_pass.txt
+      - source: wp_creds
+        target: /project/secrets/wp_creds.txt
     depends_on:
       - mariadb
 
