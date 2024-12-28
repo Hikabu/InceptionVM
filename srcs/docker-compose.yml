@@ -27,7 +27,7 @@ services:
     ports:
       - '3306:3306'
     environment:
-        MARIADB_ROOT_PASSWORD: your-secure-password
+        MARIADB_ROOT_PASSWORD: password
     networks:
       - inception
     restart: on-failure

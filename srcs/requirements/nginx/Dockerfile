@@ -1,8 +1,8 @@
 from alpine:3.20
 
-run apk update && apk upgrade && apk add nginx && mkdir -p /var/www/html
+run apk update && apk upgrade && apk add --no-cache nginx openssl
 
-copy conf/nginx.conf /etc/nginx/http.d/nginx.conf
+copy ./requirements/nginx/conf/nginx.conf /etc/nginx/http.d/nginx.conf
 
 run \
 	apk add openssl && \
@@ -13,5 +13,5 @@ run \
 		-subj '/C=FR/ST=IDF/L=Paris/O=42Network/OU=42Paris/CN=vfedorov.42.fr' \
 	&& \
 true
-
-entrypoint ["env", "-i", "/usr/sbin/nginx", "-g", "daemon off;"]
+expose 443
+entrypoint ["nginx", "-g", "daemon off;"]

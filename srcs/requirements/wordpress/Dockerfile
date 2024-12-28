@@ -58,10 +58,8 @@ run \
 	chmod +x wp-cli.phar && \
 	mv wp-cli.phar /usr/bin/wp-cli.phar
 
-
-copy conf/wp-config-create.sh /tmp/wp-config-create.sh
-
-run chmod +x /tmp/wp-config-create.sh
+copy ./requirements/wordpress/conf/wp-config-create.sh /var/www/
+run chmod +x ./var/www/wp-config-create.sh
 
 run \
     if [ -L /usr/bin/php ]; then rm /usr/bin/php; fi && \
@@ -69,4 +67,4 @@ run \
 
 workdir /var/www/wp-config-create
 
-entrypoint ["/tmp/wp-config-create.sh"]
+entrypoint ["/var/www/wp-config-create.sh"]
