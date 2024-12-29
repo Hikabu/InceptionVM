@@ -48,8 +48,8 @@ services:
     volumes:
       - wordpress-data:/var/www/html/wordpress
     secrets:
-      - db_creds 
-      - wp_creds 
+      - db_creds
+      - wp_creds
     depends_on:
       - mariadb
 
@@ -105,8 +105,8 @@ volumes:
 
 secrets:
   db_creds:
-    file: /home/vfedorov/project/secrets/db_creds.txt
+    file: ../secrets/db_creds.txt
   db_root:
-    file: /home/vfedorov/project/secrets/db_root_pass.txt
+    file: ../secrets/db_root_pass.txt
   wp_creds:
-    file: /home/vfedorov/project/secrets/wp_creds.txt
+    file: ../secrets/wp_creds.txt
